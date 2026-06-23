@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NutriCoach</title>
+<style>
+:root{--bg:#F7F5F0;--card:#FFF;--green:#2D6A4F;--gl:#E8F5EE;--gm:#52B788;--amber:#E76F51;--al:#FDF0EC;--blue:#2B6CB0;--bl:#EBF4FF;--gray:#6B7280;--grl:#F3F4F6;--border:#E5E7EB;--text:#1F2937;--ts:#6B7280;--r:14px;--rs:8px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nb{flex:1;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;font-size:10px;color:var(--gray);transition:color 0.15s;}
+.nb.active{color:var(--green);}
+.nb svg{width:22px;height:22px;stroke-width:1.8;}
+.header{background:var(--green);color:white;padding:52px 20px 16px;position:sticky;top:0;z-index:50;}
+.header h1{font-size:20px;font-weight:700;}
+.header p{font-size:12px;opacity:0.8;margin-top:2px;}
+.page{display:none;padding:14px 14px 90px;}
+.page.active{display:block;}
+.card{background:var(--card);border-radius:var(--r);padding:15px;margin-bottom:12px;border:1px solid var(--border);}
+.ctitle{font-size:13px;font-weight:600;color:var(--green);margin-bottom:10px;}
+.dscroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+.dscroll::-webkit-scrollbar{display:none;}
+.dtab{flex-shrink:0;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--card);color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.dtab.active{background:var(--green);color:white;border-color:var(--green);}
+.dtab.past{background:#F3F4F6;color:#9CA3AF;border-color:transparent;}
+.badge{font-size:10px;padding:2px 8px;border-radius:12px;font-weight:500;display:inline-block;}
+.br{background:#FEF3C7;color:#92400E;}
+.bt{background:#E8F5EE;color:#1B4332;}
+.bd{background:#F3F4F6;color:#6B7280;}
+.bl{background:#FEE2E2;color:#991B1B;}
+.bf{background:#FEF3C7;color:#92400E;}
+.mrow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #F3F4F6;align-items:flex-start;}
+.mrow:last-child{border-bottom:none;padding-bottom:0;}
+.mi{font-size:17px;flex-shrink:0;margin-top:1px;}
+.ml{font-size:11px;color:var(--ts);width:78px;flex-shrink:0;padding-top:2px;}
+.mc{flex:1;}
+.mt{font-size:13px;line-height:1.45;color:var(--text);}
+.mn{font-size:11px;color:var(--blue);margin-top:3px;line-height:1.4;}
+.sbox{margin-top:12px;border-radius:var(--rs);padding:10px 12px;font-size:12px;line-height:1.6;}
+.sm{background:#EBF4FF;color:#1E40AF;}
+.st{background:#E8F5EE;color:#065F46;}
+.sd{background:#F3F4F6;color:#6B7280;}
+.dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.dn{font-size:17px;font-weight:700;}
+.ss{margin-bottom:14px;}
+.sh{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--rs);margin-bottom:6px;font-size:13px;font-weight:600;}
+.si-wrap{background:var(--card);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);}
+.si{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #F3F4F6;cursor:pointer;transition:background 0.1s;user-select:none;}
+.si:last-child{border-bottom:none;}
+.si:active{background:#F3F4F6;}
+.si.ck{opacity:0.4;}
+.si.ck .st2{text-decoration:line-through;}
+.sc{width:20px;height:20px;border:1.5px solid var(--border);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.si.ck .sc{background:var(--green);border-color:var(--green);}
+.st2{font-size:14px;color:var(--text);flex:1;}
+.stag{font-size:10px;color:var(--ts);}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.smc{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;}
+.smc .lb{font-size:10px;color:var(--ts);margin-bottom:2px;}
+.smc .vl{font-size:14px;font-weight:600;}
+.chat-msgs{display:flex;flex-direction:column;gap:10px;padding-bottom:8px;}
+.msg{max-width:85%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.5;}
+.mai{background:var(--card);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;}
+.mu{background:var(--green);color:white;align-self:flex-end;border-bottom-right-radius:4px;}
+.mlb{font-size:10px;color:var(--ts);margin-bottom:3px;}
+.mlbu{text-align:right;}
+.ci-wrap{position:fixed;bottom:58px;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border);padding:10px 12px;display:flex;gap:8px;align-items:flex-end;z-index:90;}
+.ci{flex:1;border:1px solid var(--border);border-radius:20px;padding:9px 14px;font-size:14px;resize:none;max-height:100px;overflow-y:auto;outline:none;font-family:inherit;background:var(--bg);}
+.ci:focus{border-color:var(--gm);}
+.cs{width:38px;height:38px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cs:active{background:var(--gm);}
+.cs svg{width:18px;height:18px;}
+.chat-page{padding-bottom:130px;}
+.lf{display:flex;flex-direction:column;gap:10px;}
+.llb{font-size:12px;font-weight:600;color:var(--ts);margin-bottom:4px;display:block;}
+.li{width:100%;border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;}
+.li:focus{border-color:var(--gm);}
+.lrow{display:flex;gap:8px;}
+.btn{width:100%;padding:13px;border-radius:var(--rs);border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.btnp{background:var(--green);color:white;}
+.btnp:active{background:#1B4332;}
+.btns{background:#F3F4F6;color:var(--text);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.chip{padding:5px 11px;border-radius:16px;font-size:12px;border:1px solid var(--border);background:var(--card);color:var(--gray);cursor:pointer;}
+.chip:active{background:#E8F5EE;border-color:var(--green);color:var(--green);}
+.loading{display:flex;gap:4px;align-items:center;padding:4px 0;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--gray);animation:pulse 1.2s infinite;}
+.dot:nth-child(2){animation-delay:0.2s;}
+.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1)}}
+.sep{height:1px;background:var(--border);margin:12px 0;}
+.rbtn{width:100%;padding:10px;border-radius:var(--rs);border:1px solid var(--border);background:none;font-size:13px;color:var(--gray);cursor:pointer;margin-top:8px;}
+textarea{resize:none;}
+</style>
+</head>
+<body>
+
+<div class="header" id="hdr">
+  <h1 id="htitle">🥗 NutriCoach</h1>
+  <p>Semana 23–29 jun · Laia</p>
+</div>
+
+<div class="page active" id="page-menu">
+  <div class="dscroll" id="dtabs"></div>
+  <div id="dcontent"></div>
+</div>
+
+<div class="page" id="page-shop">
+  <div class="sgrid">
+    <div class="smc"><div class="lb">Total productos</div><div class="vl" id="stotal">—</div></div>
+    <div class="smc"><div class="lb">Marcados</div><div class="vl" id="sdone">0 ✓</div></div>
+  </div>
+  <div id="shopcontent"></div>
+  <button class="rbtn" onclick="resetShop()">↺ Reiniciar lista</button>
+</div>
+
+<div class="page" id="page-log">
+  <div class="card">
+    <div class="ctitle">📝 Registro del día</div>
+    <div class="lf">
+      <div><label class="llb">Día</label>
+        <select class="li" id="lday">
+          <option>Martes 24/06</option><option>Miércoles 25/06</option>
+          <option>Jueves 26/06</option><option>Viernes 27/06</option>
+          <option>Sábado 28/06</option><option>Domingo 29/06</option>
+        </select>
+      </div>
+      <div><label class="llb">Desayuno</label><textarea class="li" id="ld" rows="2" placeholder="Ej: avena con yogur y arándanos..."></textarea></div>
+      <div><label class="llb">Media mañana</label><textarea class="li" id="lm" rows="2" placeholder="Ej: manzana + nueces..."></textarea></div>
+      <div><label class="llb">Comida</label><textarea class="li" id="lc" rows="2" placeholder="Ej: ensalada + salmón + patata..."></textarea></div>
+      <div><label class="llb">Merienda</label><textarea class="li" id="lme" rows="2" placeholder="Ej: yogur + fruta..."></textarea></div>
+      <div><label class="llb">Cena</label><textarea class="li" id="lce" rows="2" placeholder="Ej: merluza al horno + verduras..."></textarea></div>
+      <div class="sep"></div>
+      <div class="ctitle">🏋️ Deporte</div>
+      <div>
+        <label class="llb">Tipo</label>
+        <div class="chips">
+          <div class="chip" onclick="setSport(this,'Fuerza')">💪 Fuerza</div>
+          <div class="chip" onclick="setSport(this,'Cardio')">🏃 Cardio</div>
+          <div class="chip" onclick="setSport(this,'Pilates')">🧘 Pilates</div>
+          <div class="chip" onclick="setSport(this,'Sin entreno')">😴 Sin entreno</div>
+        </div>
+        <input class="li" id="lsp" placeholder="O escribe aquí...">
+      </div>
+      <div class="lrow">
+        <div style="flex:1"><label class="llb">Hora</label><input class="li" id="lh" type="time"></div>
+        <div style="flex:1"><label class="llb">Duración (min)</label><input class="li" id="ldur" type="number" placeholder="45"></div>
+      </div>
+      <button class="btn btnp" onclick="submitLog()">Analizar mi día ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-chat">
+  <div class="chat-page">
+    <div class="chat-msgs" id="cmsgs"></div>
+  </div>
+  <div class="ci-wrap">
+    <textarea class="ci" id="cinput" rows="1" placeholder="Pregunta a NutriCoach..." oninput="ar(this)" onkeydown="hk(event)"></textarea>
+    <button class="cs" onclick="send()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nb active" onclick="sp('menu',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Menú
+  </button>
+  <button class="nb" onclick="sp('shop',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Compra
+  </button>
+  <button class="nb" onclick="sp('log',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Registro
+  </button>
+  <button class="nb" onclick="sp('chat',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chat
+  </button>
+</nav>
+
+<script>
+const SYS = `Eres NutriCoach, asesora experta en nutrición clínica y deportiva para Laia.
+
+PERFIL:
+- Objetivos: pérdida grasa + ganancia muscular, fertilidad, Hashimoto + hiperparatiroidismo
+- Medicación: levotiroxina 50 (30-60 min antes desayuno, alejada del calcio), vitamina D, ácido fólico, magnesio
+
+DIETA BASE (marco inamovible):
+- Verduras 2x/día mínimo, una cruda preferiblemente
+- Fruta 2-3 piezas/día enteras
+- Lácteos 1-2 raciones (yogur natural, leche semidesnatada, queso <30% MG)
+- Proteína: pescado prioritario, legumbres mínimo 3x/semana, huevo y embutido reducidos
+- HC: patata/boniato máx 2x/semana, arroz/pasta/pan siempre integral
+- Grasas: AOVE, aguacate, frutos secos
+- Días entreno: añadir HC pre o post. Días descanso: SIN HC en comidas principales
+- Pre-entreno: sin frutos secos → sustituir por miel
+- Método del plato: ½ verdura, ¼ proteína, ¼ HC (solo si toca)
+- Crucíferas SIEMPRE cocinadas (nunca crudas)
+- Col lombarda máx 2x/semana cocinada
+- Priorizar selenio, folatos, zinc, omega-3
+
+RECETARIO APROBADO (optimizado):
+Bowl avena: avena+yogur+arándanos+frutos secos o miel
+Granola manzana: manzana+avena+nueces+miel+canela (airfryer 180° 20min)
+Crepes calabaza: calabaza cocida+avena+huevo+sal
+Bolitas plátano: plátano+avena+miel+AOVE
+Bizcocho avena zanahoria: avena+zanahoria+huevo+yogur+leche+miel+canela+levadura
+Carrot cake: plátano o manzana+avena+huevo+zanahoria+leche+miel+canela+levadura
+Galletas pistacho: pistachos+arándanos+chocolate negro +70%
+Hummus: garbanzos+limón+ajo+AOVE+sal
+Gazpacho: tomate+pepino+pimiento+cebolla+ajo+AOVE+vinagre+sal
+Crema calabaza champiñones: calabaza+champiñones+caldo+AOVE+sal
+Crema calabaza zanahoria: calabaza+zanahoria+cebolla+ajo+caldo+AOVE+sal
+Crema calabacín: calabacín+zanahoria+patata+caldo+orégano+sal
+Crema alcachofa pavo: alcachofa congelada+cebolla+ajo+caldo+pavo+sal
+Crema tomate asado: tomate+cebolla+ajo+caldo vegetal+queso batido+orégano+AOVE (horno 180° 25min)
+Crema zanahoria naranja: zanahoria+cebolla+caldo+zumo naranja+cúrcuma+sal
+Crema remolacha: remolacha+zanahoria+cebolla+caldo+yogur griego 0%+sal
+Sopa cebolla: cebolla+caldo+AOVE+sal
+Bacalao ajoarriero: bacalao+pimientos+cebolla+ajo+tomate natural+pimentón choricero+AOVE+perejil+sal
+Salteado brócoli garbanzos: brócoli+zanahoria+garbanzos+AOVE+sal+hierbas provenzales
+Pizza brócoli: brócoli+huevo+mozzarella light+pavo+cebolla+sal (horno 190° 15min)
+Wrap zanahoria guacamole: zanahoria+huevo+mozzarella light+aguacate+cebolla+limón+sal (horno 180° 20min)
+Pizza burger pollo: hamburguesa pollo+tomate cherry+mozzarella light+pesto+sal
+Pizza boniato: boniato+mozzarella light+ricotta+tomate cherry+jamón+aguacate+sal
+Boniato relleno aguacate: boniato+queso cottage+tomate cherry+aguacate+AOVE+sal
+Boniato relleno carne: boniato+pollo picado+pimentón+tomate concentrado+queso cottage+aguacate+AOVE+sal
+Ensalada quinoa gambas: quinoa+gambas+tomate cherry+aguacate+limón+AOVE+sal
+Pasta calabacín: pasta integral+calabacín+cebolla+tomate cherry+ajo+mozzarella light+AOVE+sal
+Chips cebolla garbanzos: cebolla+garbanzos+mozzarella light+cúrcuma+ajo en polvo+sal
+Puerro con patata: puerro+patata+AOVE+sal
+Salteado col lombarda: col lombarda+zanahoria+cebolla+AOVE+sal (siempre cocinada)
+Brócoli al horno: brócoli+AOVE+pimentón+ajo en polvo+sal
+Puré patatas setas: patata+setas+perejil+huevo+AOVE+sal
+
+MENÚ SEMANA 23-29 JUNIO:
+Lun 23 (PASADO/fuerza): desayuno napolitana fuera marco. Comida ensalada tomate+pollo+gazpacho. Entreno 19h fuerza 45min. Cena bocadillo tortilla+escalivada.
+Mar 24 (DESCANSO): D:yogur+arándanos+nueces+chía | C:crema tomate asado+bacalao ajoarriero | Ce:crema alcachofa pavo+wrap zanahoria sin tortita
+Mié 25 (DESCANSO): D:yogur+arándanos+lino+canela | C:sopa cebolla+pizza brócoli pavo | Ce:crema remolacha+lubina horno
+Jue 26 (ENTRENO): D:granola manzana+yogur | C:ensalada quinoa gambas aguacate | M:bolitas plátano | Ce:salteado brócoli garbanzos+salmón
+Vie 27 (ENTRENO): D:bowl avena+yogur+arándanos | C:crema calabaza zanahoria+bacalao+boniato | M:carrot cake+yogur | Ce:col lombarda salteada+dorada
+Sáb 28 (ENTRENO): D:crepes calabaza+yogur+arándanos | C:gazpacho+chips cebolla garbanzos+tortitas maíz | M:boniato relleno aguacate | Ce:crema calabacín+salmón
+Dom 29 (DESCANSO): D:yogur+nueces+lino+arándanos | C:crema zanahoria naranja+pizza brócoli pavo | M:galletas pistacho | Ce:crema alcachofas sin patata+merluza
+
+ESTILO DE RESPUESTA:
+- Español, tono cercano y motivador
+- Respuestas cortas y directas (estás en móvil)
+- Al analizar un día: primero lo positivo, luego mejoras
+- Si algo sale del marco: sugiere alternativa válida
+- Nunca sustituyas al profesional de salud`;
+
+const DAYS=[
+  {id:'lun',name:'Lun 23',full:'Lunes 23/06',sport:'pasado',sl:'Ya pasó',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Napolitana + capuccino',n:'Fuera del marco · puntual sin drama',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'Ensalada tomate + pollo + gazpacho + nectarina',n:'Bien · faltó HC pre-entreno tarde',levo:false,fav:false},
+    {i:'☕',l:'Merienda',t:'Yogur + avena + plátano + miel',n:'Buena merienda pre-entreno 💪',levo:false,fav:false},
+    {i:'🏋️',l:'Entreno 19h',t:'Fuerza 45min · hipthrust · peso muerto · pecho',n:'',levo:false,fav:false},
+    {i:'🌙',l:'Cena',t:'Bocadillo tortilla + escalivada + rúcula',n:'Pan blanco → mejor integral · rúcula cruda → mejor cocinada',levo:false,fav:false}
+   ],sm:'',st:'',sd:'Día completado y analizado.'},
+  {id:'mar',name:'Mar 24',full:'Martes 24/06',sport:'descanso',sl:'Descanso',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Yogur natural + arándanos + nueces + chía',n:'Sin HC · levotiroxina 30-60 min antes',levo:true,fav:false},
+    {i:'🍎',l:'Media mañana',t:'Manzana',n:'',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ crema tomate asado · ½ bacalao ajoarriero',n:'Sin HC · licopeno + selenio',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Yogur natural + nueces',n:'',levo:false,fav:false},
+    {i:'🌙',l:'Cena',t:'½ crema alcachofa pavo · ½ wrap zanahoria con guacamole',n:'Sin HC · sin tortita de maíz · aguacate = folatos',levo:false,fav:true}
+   ],sm:'',st:'',sd:'Sin hidratos en ninguna comida principal.'},
+  {id:'mie',name:'Mié 25',full:'Miércoles 25/06',sport:'descanso',sl:'Descanso',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Yogur natural + arándanos + lino + canela',n:'Sin HC · levotiroxina 30-60 min antes',levo:true,fav:false},
+    {i:'🍎',l:'Media mañana',t:'Pera',n:'',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ sopa de cebolla · ½ pizza brócoli con pavo y mozzarella light',n:'Sin HC · brócoli siempre cocinado',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Manzana + queso fresco',n:'',levo:false,fav:false},
+    {i:'🌙',l:'Cena',t:'½ crema remolacha y yogur griego · ½ lubina al horno',n:'Sin HC · yogur griego 0% al servir',levo:false,fav:true}
+   ],sm:'',st:'',sd:'Sin hidratos en ninguna comida principal.'},
+  {id:'jue',name:'Jue 26',full:'Jueves 26/06',sport:'entreno',sl:'Entreno',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Granola de manzana con avena, nueces, miel y canela + yogur',n:'Sin nueces si entrenas después → miel · levotiroxina 30-60 min antes',levo:true,fav:true},
+    {i:'🍎',l:'Media mañana',t:'Naranja + yogur natural',n:'Si entrenas después: añade miel o plátano',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ ensalada quinoa con gambas, aguacate y tomate cherry',n:'HC (quinoa) por día entreno · gambas = zinc + selenio',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Bolitas de plátano con avena y miel',n:'Pre-entreno si entrenas tarde',levo:false,fav:true},
+    {i:'🌙',l:'Cena',t:'½ salteado brócoli garbanzos · ½ salmón a la plancha',n:'Brócoli siempre cocinado · HC (garbanzos) si entrenas noche',levo:false,fav:true}
+   ],
+   sm:'Granola sin nueces. Quinoa+gambas en comida. Cena sin HC extra.',
+   st:'Granola con nueces. Bolitas plátano pre-entreno. Cena con garbanzos como HC.',sd:''},
+  {id:'vie',name:'Vie 27',full:'Viernes 27/06',sport:'entreno',sl:'Entreno',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Bowl avena con yogur natural, arándanos y frutos secos',n:'Sin frutos secos si entrenas después → miel · levotiroxina 30-60 min antes',levo:true,fav:true},
+    {i:'🍎',l:'Media mañana',t:'Kiwi + queso fresco',n:'Si entrenas después: sustituye queso por miel',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ crema calabaza zanahoria · ¼ bacalao ajoarriero · ¼ boniato asado',n:'HC (boniato) por día entreno · bacalao = selenio',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Carrot cake + yogur natural',n:'Pre-entreno si entrenas tarde · 1-2 porciones',levo:false,fav:true},
+    {i:'🌙',l:'Cena',t:'½ salteado col lombarda con zanahoria · ½ dorada a la plancha',n:'Sin HC · col lombarda siempre cocinada',levo:false,fav:true}
+   ],
+   sm:'Avena sin frutos secos. Crema calabaza+bacalao+boniato. Cena sin HC.',
+   st:'Avena con frutos secos. Carrot cake pre-entreno. Cena sin HC.',sd:''},
+  {id:'sab',name:'Sáb 28',full:'Sábado 28/06',sport:'entreno',sl:'Entreno',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Crepes de calabaza con yogur y arándanos',n:'HC pre-entreno ideal · levotiroxina 30-60 min antes',levo:true,fav:true},
+    {i:'🍎',l:'Media mañana',t:'Naranja + nueces',n:'Si entrenas después: sustituye por miel o plátano',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ gazpacho · ¼ chips cebolla garbanzos mozzarella · ¼ tortitas maíz',n:'HC (garbanzos+tortitas) por día entreno · gazpacho = verdura cruda',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Boniato relleno de aguacate y tomate cherry',n:'Pre-entreno tarde ideal · máx 2 boniatos/semana',levo:false,fav:true},
+    {i:'🌙',l:'Cena',t:'½ crema calabacín sin patata · ½ salmón a la plancha',n:'Sin HC · calabacín+zanahoria+caldo+orégano',levo:false,fav:true}
+   ],
+   sm:'Crepes pre-entreno. Gazpacho+chips garbanzos+tortitas. Cena sin HC.',
+   st:'Crepes. Boniato relleno pre-entreno. Cena sin HC.',sd:''},
+  {id:'dom',name:'Dom 29',full:'Domingo 29/06',sport:'descanso',sl:'Descanso',
+   meals:[
+    {i:'🌅',l:'Desayuno',t:'Yogur natural + nueces + semillas lino + arándanos',n:'Sin HC · levotiroxina 30-60 min antes',levo:true,fav:false},
+    {i:'🍎',l:'Media mañana',t:'Pera',n:'',levo:false,fav:false},
+    {i:'🍽️',l:'Comida',t:'½ crema zanahoria naranja · ½ pizza brócoli pavo mozzarella light',n:'Sin HC · brócoli cocinado · cúrcuma + zanahoria',levo:false,fav:true},
+    {i:'☕',l:'Merienda',t:'Galletas pistacho y arándanos + infusión',n:'2-3 galletas · chocolate negro +70%',levo:false,fav:true},
+    {i:'🌙',l:'Cena',t:'½ crema alcachofas sin patata · ½ merluza al horno con limón',n:'Sin HC · alcachofa = depurativa',levo:false,fav:true}
+   ],sm:'',st:'',sd:'Sin hidratos en ninguna comida principal.'}
+];
+
+const SHOP=[
+  {t:'🐟 Pescado fresco',bg:'#EBF4FF',tc:'#1E40AF',items:[
+    {t:'Bacalao al punto de sal',tag:'Mar · Vie'},{t:'Salmón fresco',tag:'Jue · Sáb'},
+    {t:'Lubina fresca',tag:'Mié'},{t:'Dorada fresca',tag:'Vie'},{t:'Merluza fresca',tag:'Dom'}]},
+  {t:'🦐 Marisco',bg:'#EBF4FF',tc:'#1E40AF',items:[{t:'Gambas frescas o congeladas',tag:'Jue'}]},
+  {t:'🍗 Carne',bg:'#FEF3C7',tc:'#92400E',items:[
+    {t:'Fiambre de pavo sin aditivos',tag:'Mié · Dom'},{t:'Hamburguesa de pollo 100%',tag:'Vie'}]},
+  {t:'🥦 Verduras',bg:'#ECFDF5',tc:'#065F46',items:[
+    {t:'Tomates maduros',tag:'Mar'},{t:'Tomates cherry',tag:'Jue·Sáb·Dom'},
+    {t:'Calabaza',tag:'Vie'},{t:'Calabacín',tag:'Sáb'},
+    {t:'Zanahoria (bolsa)',tag:'Mar·Mié·Vie·Sáb·Dom'},{t:'Brócoli fresco',tag:'Mié·Dom'},
+    {t:'Col lombarda',tag:'Vie'},{t:'Cebolla (malla)',tag:'Toda la semana'},
+    {t:'Remolacha cocida',tag:'Mié'},{t:'Alcachofas congeladas',tag:'Mar·Dom'},
+    {t:'Aguacate',tag:'Jue·Sáb'},{t:'Pepino',tag:'Sáb'},{t:'Pimiento rojo y verde',tag:'Mar·Vie'}]},
+  {t:'🍎 Fruta',bg:'#FDF2F8',tc:'#831843',items:[
+    {t:'Manzana',tag:'Mar·Jue'},{t:'Pera',tag:'Mié·Dom'},{t:'Naranja',tag:'Jue·Sáb·Dom'},
+    {t:'Kiwi',tag:'Vie'},{t:'Plátano',tag:'Jue·Vie'},{t:'Arándanos frescos',tag:'Mar·Mié·Vie·Dom'}]},
+  {t:'🥛 Lácteos',bg:'#FFFBEB',tc:'#92400E',items:[
+    {t:'Yogur natural sin azúcar (varios)',tag:'Toda la semana'},{t:'Yogur griego 0%',tag:'Mié'},
+    {t:'Queso cottage o fresco',tag:'Mar·Sáb·Dom'},{t:'Mozzarella light',tag:'Mié·Sáb·Dom'},
+    {t:'Queso blanco batido',tag:'Mar'},{t:'Leche semidesnatada',tag:'Vie'}]},
+  {t:'🫙 Despensa',bg:'#F9FAFB',tc:'#374151',items:[
+    {t:'Garbanzos cocidos bote',tag:'Jue·Sáb'},{t:'Quinoa',tag:'Jue'},
+    {t:'Avena en copos',tag:'Jue·Vie·Sáb'},{t:'Boniato',tag:'Vie·Sáb'},
+    {t:'Tortitas de maíz',tag:'Sáb'},{t:'Caldo pollo sin sal',tag:'Mar·Mié·Vie·Sáb'},
+    {t:'Caldo vegetal sin sal',tag:'Mar'},{t:'Tomate natural triturado',tag:'Mar·Vie'},
+    {t:'Pimiento choricero',tag:'Mar·Vie'},{t:'Miel',tag:'Jue·Vie·Sáb'},
+    {t:'Nueces',tag:'Mar·Mié·Sáb'},{t:'Pistachos',tag:'Dom'},
+    {t:'Semillas de chía',tag:'Mar'},{t:'Semillas de lino',tag:'Mié·Dom'},
+    {t:'Chocolate negro +70%',tag:'Dom'}]},
+  {t:'🧄 Especias',bg:'#ECFDF5',tc:'#065F46',items:[
+    {t:'Ajo fresco',tag:'Mar·Vie·Sáb'},{t:'Cúrcuma',tag:'Mié·Sáb·Dom'},
+    {t:'Canela molida',tag:'Jue'},{t:'Orégano',tag:'Mar·Sáb'},
+    {t:'Pimentón',tag:'Vie'},{t:'Limón',tag:'Mar·Mié·Vie·Dom'},
+    {t:'Vinagre',tag:'Sáb'},{t:'Perejil fresco',tag:'Mar·Vie'}]}
+];
+
+let aday=1, shopCk=new Set(), hist=[];
+
+function sp(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+  const T={menu:'🥗 NutriCoach',shop:'🛒 Lista de la compra',log:'📝 Registro del día',chat:'💬 Chat con NutriCoach'};
+  document.getElementById('htitle').textContent=T[page];
+}
+
+function renderTabs(){
+  document.getElementById('dtabs').innerHTML=DAYS.map((d,i)=>{
+    let c='dtab';
+    if(i===aday)c+=' active';
+    else if(d.sport==='pasado')c+=' past';
+    return `<div class="${c}" onclick="sd(${i})">${d.name}</div>`;
+  }).join('');
+}
+
+function sd(i){aday=i;renderTabs();renderDay();}
+
+function renderDay(){
+  const d=DAYS[aday];
+  const ip=d.sport==='pasado', ir=d.sport==='descanso';
+  const bc=ip?'bd':ir?'br':'bt';
+  const meals=d.meals.map(m=>`
+    <div class="mrow">
+      <div class="mi">${m.i}</div>
+      <div class="ml">${m.l}</div>
+      <div class="mc">
+        <div class="mt">${m.t}${m.fav?' <span class="badge bf">favorita</span>':''}${m.levo?' <span class="badge bl">levo ⏱</span>':''}</div>
+        ${m.n?`<div class="mn">${m.n}</div>`:''}
+      </div>
+    </div>`).join('');
+  const sport=ip?`<div class="sbox sd">${d.sd}</div>`:
+    ir?`<div class="sbox sd">🛌 <strong>Descanso:</strong> ${d.sd}</div>`:
+    `<div class="sbox sm">🌅 <strong>Entrenas mañana:</strong> ${d.sm}</div>
+     <div class="sbox st" style="margin-top:8px">🌆 <strong>Entrenas tarde:</strong> ${d.st}</div>`;
+  document.getElementById('dcontent').innerHTML=`
+    <div class="card">
+      <div class="dhead"><div class="dn">${d.full}</div><span class="badge ${bc}">${d.sl}</span></div>
+      ${meals}${sport}
+      ${!ip?`<button class="btn btns" style="margin-top:12px;font-size:13px" onclick="chatDay('${d.full}')">Ajustar este día en el chat ↗</button>`:''}
+    </div>`;
+}
+
+function chatDay(n){
+  document.querySelectorAll('.nb')[3].click();
+  document.getElementById('cinput').value=`Hoy es ${n}. Ajústame el menú según mi entreno.`;
+  document.getElementById('cinput').focus();
+}
+
+function renderShop(){
+  let tot=0,dn=0;
+  document.getElementById('shopcontent').innerHTML=SHOP.map(s=>{
+    const items=s.items.map((it,ii)=>{
+      const k=s.t+ii; tot++;
+      const ck=shopCk.has(k); if(ck)dn++;
+      return `<div class="si ${ck?'ck':''}" onclick="tgShop('${k}')">
+        <div class="sc">${ck?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+        <span class="st2">${it.t}</span><span class="stag">${it.tag}</span>
+      </div>`;
+    }).join('');
+    return `<div class="ss">
+      <div class="sh" style="background:${s.bg};color:${s.tc}">${s.t}</div>
+      <div class="si-wrap">${items}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('stotal').textContent=tot+' items';
+  document.getElementById('sdone').textContent=dn+' ✓';
+}
+
+function tgShop(k){shopCk.has(k)?shopCk.delete(k):shopCk.add(k);renderShop();}
+function resetShop(){shopCk.clear();renderShop();}
+
+function setSport(el,v){document.getElementById('lsp').value=v;}
+
+function submitLog(){
+  const day=document.getElementById('lday').value;
+  const parts=[
+    document.getElementById('ld').value && `• Desayuno: ${document.getElementById('ld').value}`,
+    document.getElementById('lm').value && `• Media mañana: ${document.getElementById('lm').value}`,
+    document.getElementById('lc').value && `• Comida: ${document.getElementById('lc').value}`,
+    document.getElementById('lme').value && `• Merienda: ${document.getElementById('lme').value}`,
+    document.getElementById('lce').value && `• Cena: ${document.getElementById('lce').value}`,
+  ].filter(Boolean);
+  const sp=document.getElementById('lsp').value;
+  const h=document.getElementById('lh').value;
+  const du=document.getElementById('ldur').value;
+  let msg=`Analiza lo que he comido el ${day}:\n${parts.join('\n')}`;
+  if(sp) msg+=`\n\nDeporte: ${sp}${h?' a las '+h+'h':''}${du?' durante '+du+' min':''}`;
+  document.querySelectorAll('.nb')[3].click();
+  document.getElementById('cinput').value=msg;
+  send();
+}
+
+function addMsg(role,text){
+  const w=document.getElementById('cmsgs');
+  const ai=role==='assistant';
+  const d=document.createElement('div');
+  d.innerHTML=`<div class="mlb ${ai?'':'mlbu'}">${ai?'NutriCoach':'Tú'}</div>
+    <div class="msg ${ai?'mai':'mu'}">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  w.appendChild(d);
+  w.scrollTop=w.scrollHeight;
+}
+
+function addLoad(){
+  const w=document.getElementById('cmsgs');
+  const d=document.createElement('div');
+  d.id='ldmsg';
+  d.innerHTML=`<div class="mlb">NutriCoach</div><div class="msg mai"><div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  w.appendChild(d);w.scrollTop=w.scrollHeight;return d;
+}
+
+async function send(){
+  const inp=document.getElementById('cinput');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  inp.value='';inp.style.height='auto';
+  addMsg('user',txt);
+  hist.push({role:'user',content:txt});
+  const ld=addLoad();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages:hist})
+    });
+    const data=await r.json();
+    ld.remove();
+    const rep=data.content&&data.content[0]?data.content[0].text:'Error al conectar. Inténtalo de nuevo.';
+    addMsg('assistant',rep);
+    hist.push({role:'assistant',content:rep});
+  }catch(e){
+    ld.remove();
+    addMsg('assistant','Error de conexión. Comprueba tu red e inténtalo de nuevo.');
+  }
+}
+
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+
+function initChat(){
+  hist=[];
+  addMsg('assistant','¡Hola Laia! 👋 Soy NutriCoach.\n\nTengo cargado tu menú semanal, recetario completo y dieta base.\n\nPuedo ayudarte a:\n• Ajustar el menú del día\n• Analizar lo que has comido\n• Proponer recetas alternativas\n• Resolver dudas nutricionales\n\n¿En qué te ayudo hoy? 😊');
+  const w=document.getElementById('cmsgs');
+  const chips=['¿Qué como si entreno tarde hoy?','Proponme una alternativa para cenar','¿Puedo tomar café con leche con la levotiroxina?','Analiza esta receta nueva'];
+  const d=document.createElement('div');
+  d.className='chips';d.style.marginTop='8px';
+  d.innerHTML=chips.map(c=>`<div class="chip" onclick="useChip('${c}')">${c}</div>`).join('');
+  w.appendChild(d);
+}
+
+function useChip(t){document.getElementById('cinput').value=t;send();}
+
+renderTabs();renderDay();renderShop();initChat();
+</script>
+</body>
+</html>
